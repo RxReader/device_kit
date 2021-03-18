@@ -9,12 +9,12 @@ class Device {
   static const MethodChannel _channel =
       MethodChannel('v7lin.github.io/device_kit');
 
-  static Future<String> getDeviceId() {
+  static Future<String?> getDeviceId() {
     assert(Platform.isAndroid);
     return _channel.invokeMethod<String>('getDeviceId');
   }
 
-  static Future<String> getMac() {
+  static Future<String?> getMac() {
     assert(Platform.isAndroid);
     return _channel.invokeMethod<String>('getMac');
   }

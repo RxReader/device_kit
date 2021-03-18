@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:device_kit/device_kit.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());
