@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'device_kit'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'Flutter plugin for Device.'
   s.description      = <<-DESC
 Flutter plugin for Device.
