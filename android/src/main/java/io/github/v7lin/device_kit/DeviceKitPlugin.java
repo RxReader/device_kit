@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
-import java.util.Locale;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -132,7 +131,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                             if (builder.length() > 0) {
                                 builder.deleteCharAt(builder.length() - 1);
                             }
-                            return builder.toString().toLowerCase(Locale.getDefault());
+                            return builder.toString();
                         }
                     }
                 }
