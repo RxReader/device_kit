@@ -22,4 +22,12 @@ class Device {
   static Future<bool> isCharging() {
     return _channel.invokeMethod<bool>('isCharging');
   }
+
+  static Future<bool> isSimMounted() {
+    return _channel.invokeMethod<bool>('isSimMounted');
+  }
+
+  static Future<bool> isVPNOn() {
+    return _channel.invokeMethod<bool>('isVPNOn');
+  }
 }

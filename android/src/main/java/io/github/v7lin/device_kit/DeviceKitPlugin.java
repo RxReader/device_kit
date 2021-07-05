@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -91,8 +94,8 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                     boolean isCharging = false;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         try {
-                            BatteryManager batteryManager = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
-                            isCharging = batteryManager.isCharging();
+                            BatteryManager bm = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
+                            isCharging = bm != null && bm.isCharging();
                         } catch (Exception ignore) {
                             // ignore
                         }
@@ -114,6 +117,31 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                     }
                 }
             }.execute();
+        } else if ("isSimMounted".equals(call.method)) {
+            try {
+                TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+                boolean isSimMounted = tm != null && tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
+                result.success(isSimMounted);
+            } catch (Exception ignore) {
+                result.success(false);
+            }
+        } else if ("isVPNOn".equals(call.method)) {
+            try {
+                boolean isVPNOn = false;
+                ConnectivityManager cm = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    for (Network network : cm.getAllNetworks()) {
+                        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+                        if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                            isVPNOn = true;
+                            break;
+                        }
+                    }
+                }
+                result.success(isVPNOn);
+            } catch (Exception ignore) {
+                result.success(false);
+            }
         } else {
             result.notImplemented();
         }
@@ -124,7 +152,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
         try {
             if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
                 TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                return tm.getDeviceId();
+                return tm != null ? tm.getDeviceId() : null;
             }
         } catch (Throwable e) {
             // ignore

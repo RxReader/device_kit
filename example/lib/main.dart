@@ -38,6 +38,18 @@ class _MyAppState extends State<MyApp> {
                 print('isCharging: ${await Device.isCharging()}');
               },
             ),
+            ListTile(
+              title: const Text('isSimMounted'),
+              onTap: () async {
+                print('isSimMounted: ${await Device.isSimMounted()}');
+              },
+            ),
+            ListTile(
+              title: const Text('isVPNOn'),
+              onTap: () async {
+                print('isVPNOn: ${await Device.isVPNOn()}');
+              },
+            ),
           ],
         ),
       ),
