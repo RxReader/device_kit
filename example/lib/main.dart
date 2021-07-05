@@ -61,7 +61,8 @@ class _MyAppState extends State<MyApp> {
             ListTile(
               title: const Text('timeZone'),
               onTap: () {
-                print('timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
+                print(
+                    'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
               },
             ),
           ],

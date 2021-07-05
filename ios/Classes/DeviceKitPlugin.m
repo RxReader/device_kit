@@ -1,6 +1,6 @@
 #import "DeviceKitPlugin.h"
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #include <ifaddrs.h>
 
 @implementation DeviceKitPlugin
@@ -43,7 +43,7 @@
     }
 }
 
-- (BOOL) isVPNOn {
+- (BOOL)isVPNOn {
     BOOL flag = NO;
     // need two ways to judge this.
     if (@available(iOS 9.0, *)) {
@@ -53,7 +53,7 @@
             if ([key rangeOfString:@"tap"].location != NSNotFound ||
                 [key rangeOfString:@"tun"].location != NSNotFound ||
                 [key rangeOfString:@"ipsec"].location != NSNotFound ||
-                [key rangeOfString:@"ppp"].location != NSNotFound){
+                [key rangeOfString:@"ppp"].location != NSNotFound) {
                 flag = YES;
                 break;
             }
@@ -62,25 +62,25 @@
         struct ifaddrs *interfaces = NULL;
         struct ifaddrs *temp_addr = NULL;
         int success = 0;
-        
+
         // retrieve the current interfaces - returns 0 on success
         success = getifaddrs(&interfaces);
-        if (success == 0){
+        if (success == 0) {
             // Loop through linked list of interfaces
             temp_addr = interfaces;
-            while (temp_addr != NULL){
-                NSString *string = [NSString stringWithFormat:@"%s" , temp_addr->ifa_name];
+            while (temp_addr != NULL) {
+                NSString *string = [NSString stringWithFormat:@"%s", temp_addr->ifa_name];
                 if ([string rangeOfString:@"tap"].location != NSNotFound ||
                     [string rangeOfString:@"tun"].location != NSNotFound ||
                     [string rangeOfString:@"ipsec"].location != NSNotFound ||
-                    [string rangeOfString:@"ppp"].location != NSNotFound){
+                    [string rangeOfString:@"ppp"].location != NSNotFound) {
                     flag = YES;
                     break;
                 }
                 temp_addr = temp_addr->ifa_next;
             }
         }
-        
+
         // Free memory
         freeifaddrs(interfaces);
     }
