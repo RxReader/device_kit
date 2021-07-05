@@ -3,9 +3,13 @@ package io.github.v7lin.device_kit;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -79,6 +83,37 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                 mac = null;
             }
             result.success(mac);
+        } else if ("isCharging".equals(call.method)) {
+            final Result resultRef = result;
+            new AsyncTask<String, String, Boolean>() {
+                @Override
+                protected Boolean doInBackground(String... strings) {
+                    boolean isCharging = false;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        try {
+                            BatteryManager batteryManager = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
+                            isCharging = batteryManager.isCharging();
+                        } catch (Exception ignore) {
+                            // ignore
+                        }
+                    } else {
+                        Intent batteryBroadcast = applicationContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                        int batteryStatus = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                        isCharging = batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING || batteryStatus == BatteryManager.BATTERY_STATUS_FULL;
+//                        // 0 means we are discharging, anything else means charging
+//                        isCharging = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) != 0;
+                    }
+                    return Boolean.valueOf(isCharging);
+                }
+
+                @Override
+                protected void onPostExecute(Boolean isCharging) {
+                    super.onPostExecute(isCharging);
+                    if (resultRef != null) {
+                        resultRef.success(isCharging.booleanValue());
+                    }
+                }
+            }.execute();
         } else {
             result.notImplemented();
         }

@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:device_kit/device_kit.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,6 +30,12 @@ class _MyAppState extends State<MyApp> {
               title: const Text('getMac'),
               onTap: () async {
                 print('Mac: ${await Device.getMac()}');
+              },
+            ),
+            ListTile(
+              title: const Text('isCharging'),
+              onTap: () async {
+                print('isCharging: ${await Device.isCharging()}');
               },
             ),
           ],

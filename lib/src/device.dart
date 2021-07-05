@@ -18,4 +18,8 @@ class Device {
     assert(Platform.isAndroid);
     return _channel.invokeMethod<String>('getMac');
   }
+
+  static Future<bool> isCharging() {
+    return _channel.invokeMethod<bool>('isCharging');
+  }
 }

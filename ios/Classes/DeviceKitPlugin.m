@@ -10,7 +10,14 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    result(FlutterMethodNotImplemented);
+    if ([@"isCharging" isEqualToString:call.method]) {
+        UIDevice *device = [UIDevice currentDevice];
+        [device setBatteryMonitoringEnabled:YES];
+        BOOL isCharging = device.batteryState == UIDeviceBatteryStateCharging || device.batteryState == UIDeviceBatteryStateFull;
+        result([NSNumber numberWithBool:isCharging]);
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 @end
