@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:device_kit/device_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -48,6 +50,18 @@ class _MyAppState extends State<MyApp> {
               title: const Text('isVPNOn'),
               onTap: () async {
                 print('isVPNOn: ${await Device.isVPNOn()}');
+              },
+            ),
+            ListTile(
+              title: const Text('localeName'),
+              onTap: () {
+                print('localeName: ${Platform.localeName}');
+              },
+            ),
+            ListTile(
+              title: const Text('timeZone'),
+              onTap: () {
+                print('timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
               },
             ),
           ],
