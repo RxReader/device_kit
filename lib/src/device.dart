@@ -19,15 +19,15 @@ class Device {
     return _channel.invokeMethod<String>('getMac');
   }
 
-  static Future<bool> isCharging() {
-    return _channel.invokeMethod<bool>('isCharging');
+  static Future<bool> isCharging() async {
+    return await _channel.invokeMethod<bool>('isCharging') ?? false;
   }
 
-  static Future<bool> isSimMounted() {
-    return _channel.invokeMethod<bool>('isSimMounted');
+  static Future<bool> isSimMounted() async {
+    return await _channel.invokeMethod<bool>('isSimMounted') ?? false;
   }
 
-  static Future<bool> isVPNOn() {
-    return _channel.invokeMethod<bool>('isVPNOn');
+  static Future<bool> isVPNOn() async {
+    return await _channel.invokeMethod<bool>('isVPNOn') ?? false;
   }
 }
