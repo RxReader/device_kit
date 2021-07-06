@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:device_kit/device_kit.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +32,37 @@ class _MyAppState extends State<MyApp> {
               title: const Text('getMac'),
               onTap: () async {
                 print('Mac: ${await Device.getMac()}');
+              },
+            ),
+            ListTile(
+              title: const Text('isCharging'),
+              onTap: () async {
+                print('isCharging: ${await Device.isCharging()}');
+              },
+            ),
+            ListTile(
+              title: const Text('isSimMounted'),
+              onTap: () async {
+                print('isSimMounted: ${await Device.isSimMounted()}');
+              },
+            ),
+            ListTile(
+              title: const Text('isVPNOn'),
+              onTap: () async {
+                print('isVPNOn: ${await Device.isVPNOn()}');
+              },
+            ),
+            ListTile(
+              title: const Text('localeName'),
+              onTap: () {
+                print('localeName: ${Platform.localeName}');
+              },
+            ),
+            ListTile(
+              title: const Text('timeZone'),
+              onTap: () {
+                print(
+                    'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
               },
             ),
           ],

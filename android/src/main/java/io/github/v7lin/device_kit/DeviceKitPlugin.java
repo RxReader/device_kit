@@ -3,9 +3,16 @@ package io.github.v7lin.device_kit;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -16,7 +23,6 @@ import androidx.core.content.ContextCompat;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
-import java.util.Locale;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -80,6 +86,62 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                 mac = null;
             }
             result.success(mac);
+        } else if ("isCharging".equals(call.method)) {
+            final Result resultRef = result;
+            new AsyncTask<String, String, Boolean>() {
+                @Override
+                protected Boolean doInBackground(String... strings) {
+                    boolean isCharging = false;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        try {
+                            BatteryManager bm = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
+                            isCharging = bm != null && bm.isCharging();
+                        } catch (Exception ignore) {
+                            // ignore
+                        }
+                    } else {
+                        Intent batteryBroadcast = applicationContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                        int batteryStatus = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                        isCharging = batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING || batteryStatus == BatteryManager.BATTERY_STATUS_FULL;
+//                        // 0 means we are discharging, anything else means charging
+//                        isCharging = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) != 0;
+                    }
+                    return Boolean.valueOf(isCharging);
+                }
+
+                @Override
+                protected void onPostExecute(Boolean isCharging) {
+                    super.onPostExecute(isCharging);
+                    if (resultRef != null) {
+                        resultRef.success(isCharging.booleanValue());
+                    }
+                }
+            }.execute();
+        } else if ("isSimMounted".equals(call.method)) {
+            try {
+                TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+                boolean isSimMounted = tm != null && tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
+                result.success(isSimMounted);
+            } catch (Exception ignore) {
+                result.success(false);
+            }
+        } else if ("isVPNOn".equals(call.method)) {
+            try {
+                boolean isVPNOn = false;
+                ConnectivityManager cm = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    for (Network network : cm.getAllNetworks()) {
+                        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+                        if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                            isVPNOn = true;
+                            break;
+                        }
+                    }
+                }
+                result.success(isVPNOn);
+            } catch (Exception ignore) {
+                result.success(false);
+            }
         } else {
             result.notImplemented();
         }
@@ -90,7 +152,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
         try {
             if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
                 TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                return tm.getDeviceId();
+                return tm != null ? tm.getDeviceId() : null;
             }
         } catch (Throwable e) {
             // ignore
@@ -132,7 +194,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                             if (builder.length() > 0) {
                                 builder.deleteCharAt(builder.length() - 1);
                             }
-                            return builder.toString().toLowerCase(Locale.getDefault());
+                            return builder.toString();
                         }
                     }
                 }
