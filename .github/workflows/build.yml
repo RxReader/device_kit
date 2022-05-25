@@ -35,12 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run android/install-ndk@shell
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          if [[ $OS_NAME == windows ]]; then
-            echo "y" | $ANDROID_HOME\tools\bin\sdkmanager "ndk;21.1.6352462"
-          else
-            echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
-          fi
+          echo "y" | $ANDROID_HOME\tools\bin\sdkmanager "ndk;21.1.6352462"
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
