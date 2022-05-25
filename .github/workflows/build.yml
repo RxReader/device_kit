@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v2
@@ -42,7 +42,7 @@ jobs:
           channel: 'stable'
       - name: Run android/install-ndk@shell
         run: |
-          sudo echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
       - run: flutter --version
       - run: flutter pub get
       - run: flutter format --dry-run --set-exit-if-changed .
