@@ -35,10 +35,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run android/install-ndk@shell
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: runner.os == 'Windows'
         run: |
           echo "y" | $ANDROID_HOME\tools\bin\sdkmanager "ndk;21.1.6352462"
-        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Run android/install-ndk@shell
+        if: runner.os != 'Windows'
         run: |
           echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
       - uses: actions/setup-java@v2
