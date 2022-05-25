@@ -37,7 +37,7 @@ jobs:
       - name: Run android/install-ndk@shell
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            echo "y" | $ANDROID_HOME\tools\bin\sdkmanager "ndk;21.1.6352462"
+            $ANDROID_HOME\tools\bin\sdkmanager.bat ndk;21.1.6352462
           else
             echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.1.6352462"
           fi
