@@ -35,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run android/install-ndk@shell
+        shell: bash
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
             $ANDROID_HOME\tools\bin\sdkmanager.bat ndk;21.1.6352462
