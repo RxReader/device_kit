@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_kit/device_kit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -8,8 +9,12 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({
+    super.key,
+  });
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<StatefulWidget> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -18,51 +23,66 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Device Kit'),
+          title: Text('Device Kit'),
         ),
         body: ListView(
           children: <Widget>[
             ListTile(
-              title: const Text('getDeviceId'),
+              title: Text('getDeviceId'),
               onTap: () async {
-                print('Device Id: ${await Device.getDeviceId()}');
+                if (kDebugMode) {
+                  print('Device Id: ${await Device.instance.getDeviceId()}');
+                }
               },
             ),
             ListTile(
-              title: const Text('getMac'),
+              title: Text('getMac'),
               onTap: () async {
-                print('Mac: ${await Device.getMac()}');
+                if (kDebugMode) {
+                  print('Mac: ${await Device.instance.getMac()}');
+                }
               },
             ),
             ListTile(
-              title: const Text('isCharging'),
+              title: Text('isCharging'),
               onTap: () async {
-                print('isCharging: ${await Device.isCharging()}');
+                if (kDebugMode) {
+                  print('isCharging: ${await Device.instance.isCharging()}');
+                }
               },
             ),
             ListTile(
-              title: const Text('isSimMounted'),
+              title: Text('isSimMounted'),
               onTap: () async {
-                print('isSimMounted: ${await Device.isSimMounted()}');
+                if (kDebugMode) {
+                  print(
+                      'isSimMounted: ${await Device.instance.isSimMounted()}');
+                }
               },
             ),
             ListTile(
-              title: const Text('isVPNOn'),
+              title: Text('isVPNOn'),
               onTap: () async {
-                print('isVPNOn: ${await Device.isVPNOn()}');
+                if (kDebugMode) {
+                  print('isVPNOn: ${await Device.instance.isVPNOn()}');
+                }
               },
             ),
             ListTile(
-              title: const Text('localeName'),
+              title: Text('localeName'),
               onTap: () {
-                print('localeName: ${Platform.localeName}');
+                if (kDebugMode) {
+                  print('localeName: ${Platform.localeName}');
+                }
               },
             ),
             ListTile(
-              title: const Text('timeZone'),
+              title: Text('timeZone'),
               onTap: () {
-                print(
-                    'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
+                if (kDebugMode) {
+                  print(
+                      'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
+                }
               },
             ),
           ],

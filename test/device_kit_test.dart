@@ -1,16 +1,49 @@
-import 'package:flutter/services.dart';
+import 'package:device_kit/src/device.dart';
+import 'package:device_kit/src/device_kit_method_channel.dart';
+import 'package:device_kit/src/device_kit_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+class MockDeviceKitPlatform
+    with MockPlatformInterfaceMixin
+    implements DeviceKitPlatform {
+  @override
+  Future<String?> getDeviceId() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> getMac() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isCharging() {
+    return Future<bool>.value(false);
+  }
+
+  @override
+  Future<bool> isSimMounted() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isVPNOn() {
+    throw UnimplementedError();
+  }
+}
 
 void main() {
-  const MethodChannel channel = MethodChannel('v7lin.github.io/device_kit');
+  final DeviceKitPlatform initialPlatform = DeviceKitPlatform.instance;
 
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {});
+  test('$MethodChannelDeviceKit is the default instance', () {
+    expect(initialPlatform, isInstanceOf<MethodChannelDeviceKit>());
   });
 
-  tearDown(() {
-    channel.setMockMethodCallHandler(null);
+  test('isCharging', () async {
+    final MockDeviceKitPlatform fakePlatform = MockDeviceKitPlatform();
+    DeviceKitPlatform.instance = fakePlatform;
+
+    expect(await Device.instance.isCharging(), false);
   });
 }

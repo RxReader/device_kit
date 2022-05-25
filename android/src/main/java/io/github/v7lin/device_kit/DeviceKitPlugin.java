@@ -88,20 +88,21 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
             result.success(mac);
         } else if ("isCharging".equals(call.method)) {
             final Result resultRef = result;
+            //noinspection deprecation
             new AsyncTask<String, String, Boolean>() {
                 @Override
                 protected Boolean doInBackground(String... strings) {
                     boolean isCharging = false;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         try {
-                            BatteryManager bm = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
+                            final BatteryManager bm = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
                             isCharging = bm != null && bm.isCharging();
                         } catch (Exception ignore) {
                             // ignore
                         }
                     } else {
-                        Intent batteryBroadcast = applicationContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-                        int batteryStatus = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                        final Intent batteryBroadcast = applicationContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                        final int batteryStatus = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                         isCharging = batteryStatus == BatteryManager.BATTERY_STATUS_CHARGING || batteryStatus == BatteryManager.BATTERY_STATUS_FULL;
 //                        // 0 means we are discharging, anything else means charging
 //                        isCharging = batteryBroadcast.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) != 0;
@@ -119,8 +120,8 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
             }.execute();
         } else if ("isSimMounted".equals(call.method)) {
             try {
-                TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                boolean isSimMounted = tm != null && tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
+                final TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+                final boolean isSimMounted = tm != null && tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
                 result.success(isSimMounted);
             } catch (Exception ignore) {
                 result.success(false);
@@ -128,7 +129,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
         } else if ("isVPNOn".equals(call.method)) {
             try {
                 boolean isVPNOn = false;
-                ConnectivityManager cm = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                final ConnectivityManager cm = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
                 if (cm != null) {
                     for (Network network : cm.getAllNetworks()) {
                         NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
@@ -147,20 +148,21 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
         }
     }
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     private String getDeviceId() {
         try {
             if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
                 TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
                 return tm != null ? tm.getDeviceId() : null;
             }
-        } catch (Throwable e) {
+        } catch (Throwable tr) {
             // ignore
         }
         return null;
     }
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     @RequiresPermission(Manifest.permission.ACCESS_WIFI_STATE)
     private String getMacBySystemInterface() {
         try {
@@ -171,7 +173,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                     return info != null ? info.getMacAddress() : null;
                 }
             }
-        } catch (Throwable e) {
+        } catch (Throwable tr) {
             // ignore
         }
         return null;
@@ -199,7 +201,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (Throwable tr) {
             // ignore
         }
         return null;

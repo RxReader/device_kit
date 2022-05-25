@@ -1,10 +1,10 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint device_kit.podspec' to validate before publishing.
+# Run `pod lib lint device_kit.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
   s.name             = 'device_kit'
-  s.version          = '0.1.1'
+  s.version          = '1.0.0'
   s.summary          = 'Flutter plugin for Device.'
   s.description      = <<-DESC
 Flutter plugin for Device.
@@ -16,7 +16,7 @@ Flutter plugin for Device.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.platform = :ios, '8.0'
+  s.platform = :ios, '9.0'
 
   s.subspec 'vendor' do |sp|
     sp.frameworks = 'CoreTelephony'
