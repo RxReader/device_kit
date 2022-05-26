@@ -31,6 +31,11 @@ class MockDeviceKitPlatform
   Future<bool> isVPNOn() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<String?> getProxy() {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

@@ -41,4 +41,8 @@ abstract class DeviceKitPlatform extends PlatformInterface {
   Future<bool> isVPNOn() {
     throw UnimplementedError('isVPNOn() has not been implemented.');
   }
+
+  Future<String?> getProxy() {
+    throw UnimplementedError('getProxy() has not been implemented.');
+  }
 }

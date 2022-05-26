@@ -143,6 +143,15 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
             } catch (Exception ignore) {
                 result.success(false);
             }
+        } else if ("getProxy".equals(call.method)) {
+            final String proxyHost = System.getProperty("http.proxyHost");
+            final String proxyPort = System.getProperty("http.proxyPort");
+            if (!TextUtils.isEmpty(proxyHost)
+                    && !TextUtils.isEmpty(proxyPort) && TextUtils.isDigitsOnly(proxyPort) && Integer.parseInt(proxyPort) > -1) {
+                result.success(String.format("%1$s:%2$d", proxyHost, Integer.parseInt(proxyPort)));
+            } else {
+                result.success(null);
+            }
         } else {
             result.notImplemented();
         }

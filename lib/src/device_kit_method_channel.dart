@@ -37,4 +37,9 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   Future<bool> isVPNOn() async {
     return await methodChannel.invokeMethod<bool>('isVPNOn') ?? false;
   }
+
+  @override
+  Future<String?> getProxy() {
+    return methodChannel.invokeMethod<String>('getProxy');
+  }
 }
