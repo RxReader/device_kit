@@ -27,18 +27,21 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _brightnessChangedResp = Device.instance.brightnessChangedStream().listen((double event) {
+    _brightnessChangedResp =
+        Device.instance.brightnessChangedStream().listen((double event) {
       if (kDebugMode) {
         print('Brightness Changed: $event');
       }
     });
     if (Platform.isIOS) {
-      _takeScreenshotResp = Device.instance.takeScreenshotStream().listen((String event) {
+      _takeScreenshotResp =
+          Device.instance.takeScreenshotStream().listen((String event) {
         if (kDebugMode) {
           print('Take Screenshot: $event');
         }
       });
-      _capturedChangedResp = Device.instance.capturedChangedStream().listen((String event) {
+      _capturedChangedResp =
+          Device.instance.capturedChangedStream().listen((String event) {
         if (kDebugMode) {
           print('Captured Changed: $event');
         }
@@ -91,7 +94,8 @@ class _MyAppState extends State<MyApp> {
               title: Text('isSimMounted'),
               onTap: () async {
                 if (kDebugMode) {
-                  print('isSimMounted: ${await Device.instance.isSimMounted()}');
+                  print(
+                      'isSimMounted: ${await Device.instance.isSimMounted()}');
                 }
               },
             ),
@@ -115,7 +119,8 @@ class _MyAppState extends State<MyApp> {
               title: Text('timeZone'),
               onTap: () {
                 if (kDebugMode) {
-                  print('timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
+                  print(
+                      'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
                 }
               },
             ),

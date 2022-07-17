@@ -9,13 +9,17 @@ import 'package:flutter/services.dart';
 class MethodChannelDeviceKit extends DeviceKitPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final MethodChannel methodChannel = const MethodChannel('v7lin.github.io/device_kit');
+  final MethodChannel methodChannel =
+      const MethodChannel('v7lin.github.io/device_kit');
   @visibleForTesting
-  final EventChannel brightnessChangedEventChannel = const EventChannel('v7lin.github.io/device_kit#brightness_changed_event');
+  final EventChannel brightnessChangedEventChannel =
+      const EventChannel('v7lin.github.io/device_kit#brightness_changed_event');
   @visibleForTesting
-  final EventChannel takeScreenshotEventChannel = const EventChannel('v7lin.github.io/device_kit#take_screenshot_event');
+  final EventChannel takeScreenshotEventChannel =
+      const EventChannel('v7lin.github.io/device_kit#take_screenshot_event');
   @visibleForTesting
-  final EventChannel capturedChangedEventChannel = const EventChannel('v7lin.github.io/device_kit#captured_changed_event');
+  final EventChannel capturedChangedEventChannel =
+      const EventChannel('v7lin.github.io/device_kit#captured_changed_event');
 
   @override
   Future<String?> getDeviceId() {
@@ -53,7 +57,9 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
 
   @override
   Stream<double> brightnessChangedStream() {
-    _onBrightnessChangedStream ??= brightnessChangedEventChannel.receiveBroadcastStream().map((dynamic event) {
+    _onBrightnessChangedStream ??= brightnessChangedEventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) {
       return event as double;
     });
     return _onBrightnessChangedStream!;
@@ -90,7 +96,9 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   @override
   Stream<String> takeScreenshotStream() {
     assert(Platform.isIOS);
-    _onTakeScreenshotStream ??= takeScreenshotEventChannel.receiveBroadcastStream().map((dynamic event) {
+    _onTakeScreenshotStream ??= takeScreenshotEventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) {
       return event as String;
     });
     return _onTakeScreenshotStream!;
@@ -101,7 +109,9 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   @override
   Stream<String> capturedChangedStream() {
     assert(Platform.isIOS);
-    _onCapturedChangedStream ??= capturedChangedEventChannel.receiveBroadcastStream().map((dynamic event) {
+    _onCapturedChangedStream ??= capturedChangedEventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) {
       return event as String;
     });
     return _onCapturedChangedStream!;
