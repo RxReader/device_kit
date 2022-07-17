@@ -38,6 +38,11 @@ class MockDeviceKitPlatform
   }
 
   @override
+  Stream<double> brightnessChangedStream() {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<double> getBrightness() {
     throw UnimplementedError();
   }

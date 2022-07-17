@@ -3,13 +3,32 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #include <ifaddrs.h>
 
-@implementation DeviceKitPlugin
+@implementation DeviceKitPlugin{
+    FlutterMethodChannel *_channel;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
         methodChannelWithName:@"v7lin.github.io/device_kit"
               binaryMessenger:[registrar messenger]];
-    DeviceKitPlugin *instance = [[DeviceKitPlugin alloc] init];
+    DeviceKitPlugin *instance = [[DeviceKitPlugin alloc] initWithChannel:channel];
     [registrar addMethodCallDelegate:instance channel:channel];
+}
+
+- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
+    self = [super init];
+    if (self) {
+        _channel = channel;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessDidChange) name:UIScreenBrightnessDidChangeNotification object:nil];
+    }
+    return self;
+}
+
+- (void)brightnessDidChange {
+    if (_channel != nil) {
+        [_channel invokeMethod:@"onBrightnessChanged" arguments:@{
+            @"brightness": [NSNumber numberWithFloat:[UIScreen mainScreen].brightness],
+        }];
+    }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

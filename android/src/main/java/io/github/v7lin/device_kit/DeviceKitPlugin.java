@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -15,6 +16,8 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -26,6 +29,7 @@ import androidx.core.content.ContextCompat;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -48,6 +52,8 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
     private MethodChannel channel;
     private Context applicationContext;
     private Activity activity;
+    private Handler mainHandler;
+    private ContentObserver brightnessObserver;
 
     // --- FlutterPlugin
 
@@ -56,12 +62,37 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
         channel = new MethodChannel(binding.getBinaryMessenger(), "v7lin.github.io/device_kit");
         channel.setMethodCallHandler(this);
         applicationContext = binding.getApplicationContext();
+        mainHandler = new Handler(Looper.getMainLooper());
+        brightnessObserver = new ContentObserver(mainHandler) {
+            @Override
+            public void onChange(boolean selfChange) {
+                super.onChange(selfChange);
+                try {
+                    final float brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
+                    if (channel != null) {
+                        channel.invokeMethod("onBrightnessChanged", new HashMap<String, Object>() {
+                            {
+                                put("brightness", brightness);
+                            }
+                        });
+                    }
+                } catch (Settings.SettingNotFoundException e) {
+                }
+            }
+        };
+        applicationContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), false, brightnessObserver);
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
         channel = null;
+        if (brightnessObserver != null) {
+            applicationContext.getContentResolver().unregisterContentObserver(brightnessObserver);
+            brightnessObserver = null;
+        }
+        mainHandler.removeCallbacksAndMessages(null);
+        mainHandler = null;
         applicationContext = null;
     }
 
@@ -160,7 +191,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                 final ConnectivityManager cm = (ConnectivityManager) applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
                 if (cm != null) {
                     for (Network network : cm.getAllNetworks()) {
-                        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+                        final NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
                         if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
                             isVPNOn = true;
                             break;
@@ -185,7 +216,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                 float brightness = activity.getWindow().getAttributes().screenBrightness;
                 if (brightness < 0) { // the application is using the system brightness
                     try {
-                        brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / (float)255;
+                        brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
                     } catch (Settings.SettingNotFoundException e) {
                         brightness = 1.0f;
                     }

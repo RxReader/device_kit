@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_kit/src/device_kit_platform_interface.dart';
@@ -8,8 +9,19 @@ import 'package:flutter/services.dart';
 class MethodChannelDeviceKit extends DeviceKitPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final MethodChannel methodChannel =
-      const MethodChannel('v7lin.github.io/device_kit');
+  late final MethodChannel methodChannel =
+      const MethodChannel('v7lin.github.io/device_kit')..setMethodCallHandler(_handleMethod);
+
+  final StreamController<double> _brightnessChangedStreamController = StreamController<double>.broadcast();
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case 'onBrightnessChanged':
+        final double brightness = (call.arguments as Map<dynamic, dynamic>)['brightness'] as double;
+        _brightnessChangedStreamController.add(brightness);
+        break;
+    }
+  }
 
   @override
   Future<String?> getDeviceId() {
@@ -41,6 +53,11 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   @override
   Future<String?> getProxy() {
     return methodChannel.invokeMethod<String>('getProxy');
+  }
+
+  @override
+  Stream<double> brightnessChangedStream() {
+    return _brightnessChangedStreamController.stream;
   }
 
   @override

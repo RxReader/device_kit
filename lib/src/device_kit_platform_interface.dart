@@ -46,6 +46,10 @@ abstract class DeviceKitPlatform extends PlatformInterface {
     throw UnimplementedError('getProxy() has not been implemented.');
   }
 
+  Stream<double> brightnessChangedStream() {
+    throw UnimplementedError('brightnessChangedStream() has not been implemented.');
+  }
+
   Future<double> getBrightness() {
     throw UnimplementedError('getBrightness() has not been implemented.');
   }
