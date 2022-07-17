@@ -10,14 +10,17 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   late final MethodChannel methodChannel =
-      const MethodChannel('v7lin.github.io/device_kit')..setMethodCallHandler(_handleMethod);
+      const MethodChannel('v7lin.github.io/device_kit')
+        ..setMethodCallHandler(_handleMethod);
 
-  final StreamController<double> _brightnessChangedStreamController = StreamController<double>.broadcast();
+  final StreamController<double> _brightnessChangedStreamController =
+      StreamController<double>.broadcast();
 
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'onBrightnessChanged':
-        final double brightness = (call.arguments as Map<dynamic, dynamic>)['brightness'] as double;
+        final double brightness =
+            (call.arguments as Map<dynamic, dynamic>)['brightness'] as double;
         _brightnessChangedStreamController.add(brightness);
         break;
     }
