@@ -42,4 +42,19 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   Future<String?> getProxy() {
     return methodChannel.invokeMethod<String>('getProxy');
   }
+
+  @override
+  Future<double> getBrightness() async {
+    return await methodChannel.invokeMethod<double>('getBrightness') ?? -1;
+  }
+
+  @override
+  Future<void> setBrightness(double brightness) {
+    return methodChannel.invokeMethod<void>(
+      'method',
+      <String, dynamic>{
+        'brightness': brightness,
+      },
+    );
+  }
 }

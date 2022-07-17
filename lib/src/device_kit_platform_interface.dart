@@ -45,4 +45,13 @@ abstract class DeviceKitPlatform extends PlatformInterface {
   Future<String?> getProxy() {
     throw UnimplementedError('getProxy() has not been implemented.');
   }
+
+  Future<double> getBrightness() {
+    throw UnimplementedError('getBrightness() has not been implemented.');
+  }
+
+  Future<void> setBrightness(double brightness) {
+    throw UnimplementedError(
+        'setBrightness(brightness) has not been implemented.');
+  }
 }

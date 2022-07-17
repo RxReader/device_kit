@@ -2,6 +2,7 @@ package io.github.v7lin.device_kit;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,8 +15,10 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
@@ -25,6 +28,8 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -33,7 +38,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 /**
  * DeviceKitPlugin
  */
-public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
+public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
     private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -42,6 +47,7 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
     /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
     private Context applicationContext;
+    private Activity activity;
 
     // --- FlutterPlugin
 
@@ -57,6 +63,28 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(null);
         channel = null;
         applicationContext = null;
+    }
+
+    // --- ActivityAware
+
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        activity = null;
     }
 
     // --- MethodCallHandler
@@ -151,6 +179,30 @@ public class DeviceKitPlugin implements FlutterPlugin, MethodCallHandler {
                 result.success(String.format("%1$s:%2$d", proxyHost, Integer.parseInt(proxyPort)));
             } else {
                 result.success(null);
+            }
+        } else if ("getBrightness".equals(call.method)) {
+            if (activity != null) {
+                float brightness = activity.getWindow().getAttributes().screenBrightness;
+                if (brightness < 0) { // the application is using the system brightness
+                    try {
+                        brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / (float)255;
+                    } catch (Settings.SettingNotFoundException e) {
+                        brightness = 1.0f;
+                    }
+                }
+                result.success(brightness);
+            } else {
+                result.error("FAILED", "Activity is null.", null);
+            }
+        } else if ("setBrightness".equals(call.method)) {
+            final double brightness = call.argument("brightness");
+            if (activity != null) {
+                final WindowManager.LayoutParams layoutParams = activity.getWindow().getAttributes();
+                layoutParams.screenBrightness = (float)brightness;
+                activity.getWindow().setAttributes(layoutParams);
+                result.success(null);
+            } else {
+                result.error("FAILED", "Activity is null.", null);
             }
         } else {
             result.notImplemented();

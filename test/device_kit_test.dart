@@ -36,6 +36,16 @@ class MockDeviceKitPlatform
   Future<String?> getProxy() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<double> getBrightness() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setBrightness(double brightness) {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

@@ -1,3 +1,7 @@
+## 1.0.2
+
+* brightness
+
 ## 1.0.1
 
 * proxy

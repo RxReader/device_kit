@@ -49,6 +49,12 @@
         } else {
             result(nil);
         }
+    } else if ([@"getBrightness" isEqualToString:call.method]) {
+        result([NSNumber numberWithFloat:[UIScreen mainScreen].brightness]);
+    } else if ([@"setBrightness" isEqualToString:call.method]) {
+        NSNumber *brightness = call.arguments[@"brightness"];
+        [[UIScreen mainScreen] setBrightness:brightness.floatValue];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }

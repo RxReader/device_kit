@@ -2,9 +2,13 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint device_kit.podspec` to validate before publishing.
 #
+
+pubspec = YAML.load_file(File.join('..', 'pubspec.yaml'))
+library_version = pubspec['version'].gsub('+', '-')
+
 Pod::Spec.new do |s|
   s.name             = 'device_kit'
-  s.version          = '1.0.1'
+  s.version          = library_version
   s.summary          = 'Flutter plugin for Device.'
   s.description      = <<-DESC
 Flutter plugin for Device.
