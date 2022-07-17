@@ -5,3 +5,11 @@
 
 @interface DeviceKitBrightnessObserver : NSObject <FlutterStreamHandler>
 @end
+
+@interface DeviceKitTakeScreenshotObserver : NSObject <FlutterStreamHandler>
+
+@end
+
+@interface DeviceKitCapturedObserver : NSObject <FlutterStreamHandler>
+
+@end

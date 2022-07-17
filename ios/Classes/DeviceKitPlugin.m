@@ -112,31 +112,98 @@
 
 @end
 
-@implementation DeviceKitBrightnessObserver{
-    FlutterEventSink _eventSink;
+@implementation DeviceKitBrightnessObserver {
+    FlutterEventSink _events;
 }
 
-- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
-    if (_eventSink != nil) {
+- (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)events {
+    if (_events != nil) {
         return nil;
     }
-    _eventSink = eventSink;
+    _events = events;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessDidChange) name:UIScreenBrightnessDidChangeNotification object:nil];
     return nil;
 }
 
-- (FlutterError*)onCancelWithArguments:(id)arguments {
-    if (_eventSink == nil) {
+- (FlutterError *)onCancelWithArguments:(id)arguments;
+{
+    if (_events == nil) {
         return nil;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    _eventSink = nil;
+    _events = nil;
     return nil;
 }
 
 - (void)brightnessDidChange {
-    if (_eventSink != nil) {
-        _eventSink([NSNumber numberWithFloat:[UIScreen mainScreen].brightness]);
+    if (_events != nil) {
+        _events([NSNumber numberWithFloat:[UIScreen mainScreen].brightness]);
+    }
+}
+
+@end
+
+@implementation DeviceKitTakeScreenshotObserver {
+    FlutterEventSink _events;
+}
+
+- (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)events {
+    if (_events != nil) {
+        return nil;
+    }
+    _events = events;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(takeScreenshot) name:UIApplicationUserDidTakeScreenshotNotification object:nil];
+    return nil;
+}
+
+- (FlutterError *)onCancelWithArguments:(id)arguments;
+{
+    if (_events == nil) {
+        return nil;
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _events = nil;
+    return nil;
+}
+
+- (void)takeScreenshot {
+    if (_events != nil) {
+        _events(@"takeScreenshot");
+    }
+}
+
+@end
+
+@implementation DeviceKitCapturedObserver {
+    FlutterEventSink _events;
+}
+
+- (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)events {
+    if (_events != nil) {
+        return nil;
+    }
+    _events = events;
+    if (@available(iOS 11.0, *)) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(capturedDidChange) name:UIScreenCapturedDidChangeNotification object:nil];
+    }
+    return nil;
+}
+
+- (FlutterError *)onCancelWithArguments:(id)arguments;
+{
+    if (_events == nil) {
+        return nil;
+    }
+    if (@available(iOS 11.0, *)) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+    _events = nil;
+    return nil;
+}
+
+- (void)capturedDidChange {
+    if (_events != nil) {
+        _events(@"captured");
     }
 }
 

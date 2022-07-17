@@ -20,6 +20,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late final StreamSubscription<double> _resp;
+  bool _secure = false;
 
   @override
   void initState() {
@@ -74,8 +75,7 @@ class _MyAppState extends State<MyApp> {
               title: Text('isSimMounted'),
               onTap: () async {
                 if (kDebugMode) {
-                  print(
-                      'isSimMounted: ${await Device.instance.isSimMounted()}');
+                  print('isSimMounted: ${await Device.instance.isSimMounted()}');
                 }
               },
             ),
@@ -99,11 +99,42 @@ class _MyAppState extends State<MyApp> {
               title: Text('timeZone'),
               onTap: () {
                 if (kDebugMode) {
-                  print(
-                      'timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
+                  print('timeZone: ${DateTime.now().timeZoneName} - ${DateTime.now().timeZoneOffset}');
                 }
               },
             ),
+            ListTile(
+              title: Text('getProxy'),
+              onTap: () async {
+                if (kDebugMode) {
+                  print('proxy: ${await Device.instance.getProxy()}');
+                }
+              },
+            ),
+            ListTile(
+              title: Text('getBrightness'),
+              onTap: () async {
+                if (kDebugMode) {
+                  print('brightness: ${await Device.instance.getBrightness()}');
+                }
+              },
+            ),
+            ListTile(
+              title: Text('setBrightness'),
+              onTap: () async {
+                if (kDebugMode) {
+                  await Device.instance.setBrightness(0.5);
+                }
+              },
+            ),
+            if (Platform.isAndroid)
+              ListTile(
+                title: Text('setSecureScreen'),
+                onTap: () {
+                  _secure = !_secure;
+                  Device.instance.setSecureScreen(_secure);
+                },
+              ),
           ],
         ),
       ),
