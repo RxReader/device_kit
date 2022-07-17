@@ -12,6 +12,10 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   final MethodChannel methodChannel = const MethodChannel('v7lin.github.io/device_kit');
   @visibleForTesting
   final EventChannel brightnessChangedEventChannel = const EventChannel('v7lin.github.io/device_kit#brightness_changed_event');
+  @visibleForTesting
+  final EventChannel takeScreenshotEventChannel = const EventChannel('v7lin.github.io/device_kit#take_screenshot_event');
+  @visibleForTesting
+  final EventChannel capturedChangedEventChannel = const EventChannel('v7lin.github.io/device_kit#captured_changed_event');
 
   @override
   Future<String?> getDeviceId() {
@@ -79,5 +83,27 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
         'secure': secure,
       },
     );
+  }
+
+  Stream<String>? _onTakeScreenshotStream;
+
+  @override
+  Stream<String> takeScreenshotStream() {
+    assert(Platform.isIOS);
+    _onTakeScreenshotStream ??= takeScreenshotEventChannel.receiveBroadcastStream().map((dynamic event) {
+      return event as String;
+    });
+    return _onTakeScreenshotStream!;
+  }
+
+  Stream<String>? _onCapturedChangedStream;
+
+  @override
+  Stream<String> capturedChangedStream() {
+    assert(Platform.isIOS);
+    _onCapturedChangedStream ??= capturedChangedEventChannel.receiveBroadcastStream().map((dynamic event) {
+      return event as String;
+    });
+    return _onCapturedChangedStream!;
   }
 }

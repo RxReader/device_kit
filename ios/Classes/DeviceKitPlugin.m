@@ -16,6 +16,14 @@
     FlutterEventChannel *brightnessChangedEventChannel = [FlutterEventChannel eventChannelWithName:@"v7lin.github.io/device_kit#brightness_changed_event" binaryMessenger:[registrar messenger]];
     DeviceKitBrightnessObserver *brightnessObserver = [[DeviceKitBrightnessObserver alloc] init];
     [brightnessChangedEventChannel setStreamHandler:brightnessObserver];
+
+    FlutterEventChannel *takeScreenshotEventChannel = [FlutterEventChannel eventChannelWithName:@"v7lin.github.io/device_kit#take_screenshot_event" binaryMessenger:[registrar messenger]];
+    DeviceKitTakeScreenshotObserver *takeScreenshotObserver = [[DeviceKitTakeScreenshotObserver alloc] init];
+    [takeScreenshotEventChannel setStreamHandler:takeScreenshotObserver];
+
+    FlutterEventChannel *capturedChangedEventChannel = [FlutterEventChannel eventChannelWithName:@"v7lin.github.io/device_kit#captured_changed_event" binaryMessenger:[registrar messenger]];
+    DeviceKitCapturedObserver *capturedObserver = [[DeviceKitCapturedObserver alloc] init];
+    [capturedChangedEventChannel setStreamHandler:capturedObserver];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {

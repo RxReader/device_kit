@@ -56,6 +56,16 @@ class MockDeviceKitPlatform
   Future<void> setSecureScreen(bool secure) {
     throw UnimplementedError();
   }
+
+  @override
+  Stream<String> takeScreenshotStream() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<String> capturedChangedStream() {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

@@ -19,22 +19,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final StreamSubscription<double> _resp;
+  late final StreamSubscription<double> _brightnessChangedResp;
+  StreamSubscription<String>? _takeScreenshotResp;
+  StreamSubscription<String>? _capturedChangedResp;
   bool _secure = false;
 
   @override
   void initState() {
     super.initState();
-    _resp = Device.instance.brightnessChangedStream().listen((double event) {
+    _brightnessChangedResp = Device.instance.brightnessChangedStream().listen((double event) {
       if (kDebugMode) {
         print('Brightness Changed: $event');
       }
     });
+    if (Platform.isIOS) {
+      _takeScreenshotResp = Device.instance.takeScreenshotStream().listen((String event) {
+        if (kDebugMode) {
+          print('Take Screenshot: $event');
+        }
+      });
+      _capturedChangedResp = Device.instance.capturedChangedStream().listen((String event) {
+        if (kDebugMode) {
+          print('Captured Changed: $event');
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
-    _resp.cancel();
+    _capturedChangedResp?.cancel();
+    _takeScreenshotResp?.cancel();
+    _brightnessChangedResp.cancel();
     super.dispose();
   }
 

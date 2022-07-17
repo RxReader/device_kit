@@ -64,4 +64,14 @@ abstract class DeviceKitPlatform extends PlatformInterface {
     throw UnimplementedError(
         'setSecureScreen(secure) has not been implemented.');
   }
+
+  Stream<String> takeScreenshotStream() {
+    throw UnimplementedError(
+        'takeScreenshotStream() has not been implemented.');
+  }
+
+  Stream<String> capturedChangedStream() {
+    throw UnimplementedError(
+        'capturedChangedStream() has not been implemented.');
+  }
 }
