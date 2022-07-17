@@ -51,7 +51,7 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
   @override
   Future<void> setBrightness(double brightness) {
     return methodChannel.invokeMethod<void>(
-      'method',
+      'setBrightness',
       <String, dynamic>{
         'brightness': brightness,
       },
