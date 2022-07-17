@@ -1,3 +1,8 @@
+## 1.0.5
+
+* Android 防截屏/录屏
+* iOS 截屏/录屏监听
+
 ## 1.0.4
 
 * brightness change event

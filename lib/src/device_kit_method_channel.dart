@@ -9,22 +9,9 @@ import 'package:flutter/services.dart';
 class MethodChannelDeviceKit extends DeviceKitPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  late final MethodChannel methodChannel =
-      const MethodChannel('v7lin.github.io/device_kit')
-        ..setMethodCallHandler(_handleMethod);
-
-  final StreamController<double> _brightnessChangedStreamController =
-      StreamController<double>.broadcast();
-
-  Future<dynamic> _handleMethod(MethodCall call) async {
-    switch (call.method) {
-      case 'onBrightnessChanged':
-        final double brightness =
-            (call.arguments as Map<dynamic, dynamic>)['brightness'] as double;
-        _brightnessChangedStreamController.add(brightness);
-        break;
-    }
-  }
+  final MethodChannel methodChannel = const MethodChannel('v7lin.github.io/device_kit');
+  @visibleForTesting
+  final EventChannel brightnessChangedEventChannel = const EventChannel('v7lin.github.io/device_kit#brightness_changed_event');
 
   @override
   Future<String?> getDeviceId() {
@@ -58,9 +45,14 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
     return methodChannel.invokeMethod<String>('getProxy');
   }
 
+  Stream<double>? _onBrightnessChangedStream;
+
   @override
   Stream<double> brightnessChangedStream() {
-    return _brightnessChangedStreamController.stream;
+    _onBrightnessChangedStream ??= brightnessChangedEventChannel.receiveBroadcastStream().map((dynamic event) {
+      return event as double;
+    });
+    return _onBrightnessChangedStream!;
   }
 
   @override
@@ -74,6 +66,17 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
       'setBrightness',
       <String, dynamic>{
         'brightness': brightness,
+      },
+    );
+  }
+
+  @override
+  Future<void> setSecureScreen(bool secure) {
+    assert(Platform.isAndroid);
+    return methodChannel.invokeMethod(
+      'setSecureScreen',
+      <String, dynamic>{
+        'secure': secure,
       },
     );
   }

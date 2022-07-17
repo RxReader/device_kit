@@ -29,11 +29,11 @@ import androidx.core.content.ContextCompat;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
-import java.util.HashMap;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -45,15 +45,15 @@ import io.flutter.plugin.common.MethodChannel.Result;
 public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
     private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
+    private Context applicationContext;
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
-    private Context applicationContext;
+    private BrightnessObserver brightnessObserver;
+    private EventChannel brightnessChangedEventChannel;
     private Activity activity;
-    private Handler mainHandler;
-    private ContentObserver brightnessObserver;
 
     // --- FlutterPlugin
 
@@ -61,39 +61,73 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         channel = new MethodChannel(binding.getBinaryMessenger(), "v7lin.github.io/device_kit");
         channel.setMethodCallHandler(this);
+        brightnessChangedEventChannel = new EventChannel(binding.getBinaryMessenger(), "v7lin.github.io/device_kit#brightness_changed_event");
+        brightnessObserver = new BrightnessObserver(binding.getApplicationContext());
+        brightnessChangedEventChannel.setStreamHandler(brightnessObserver);
         applicationContext = binding.getApplicationContext();
-        mainHandler = new Handler(Looper.getMainLooper());
-        brightnessObserver = new ContentObserver(mainHandler) {
-            @Override
-            public void onChange(boolean selfChange) {
-                super.onChange(selfChange);
-                try {
-                    final float brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
-                    if (channel != null) {
-                        channel.invokeMethod("onBrightnessChanged", new HashMap<String, Object>() {
-                            {
-                                put("brightness", brightness);
-                            }
-                        });
-                    }
-                } catch (Settings.SettingNotFoundException e) {
-                }
-            }
-        };
-        applicationContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), false, brightnessObserver);
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
         channel = null;
+        brightnessChangedEventChannel.setStreamHandler(null);
+        brightnessChangedEventChannel = null;
         if (brightnessObserver != null) {
-            applicationContext.getContentResolver().unregisterContentObserver(brightnessObserver);
+            brightnessObserver.dispose();
             brightnessObserver = null;
         }
-        mainHandler.removeCallbacksAndMessages(null);
-        mainHandler = null;
         applicationContext = null;
+    }
+
+    private static class BrightnessObserver implements EventChannel.StreamHandler {
+        private final Context applicationContext;
+        private final Handler mainHandler;
+        private ContentObserver observer;
+
+        public BrightnessObserver(Context applicationContext) {
+            this.applicationContext = applicationContext;
+            this.mainHandler = new Handler(Looper.getMainLooper());
+        }
+        // --- StreamHandler
+
+        @Override
+        public void onListen(Object arguments, EventChannel.EventSink events) {
+            if (observer != null) {
+                return;
+            }
+            observer = new ContentObserver(mainHandler) {
+                @Override
+                public void onChange(boolean selfChange) {
+                    super.onChange(selfChange);
+                    try {
+                        final float brightness = Settings.System.getInt(applicationContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
+                        if (events != null) {
+                            events.success(brightness);
+                        }
+                    } catch (Settings.SettingNotFoundException e) {
+                    }
+                }
+            };
+            applicationContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS), false, observer);
+        }
+
+        @Override
+        public void onCancel(Object arguments) {
+            if (observer == null) {
+                return;
+            }
+            applicationContext.getContentResolver().unregisterContentObserver(observer);
+            observer = null;
+        }
+
+        public void dispose() {
+            if (observer != null) {
+                applicationContext.getContentResolver().unregisterContentObserver(observer);
+                observer = null;
+            }
+            mainHandler.removeCallbacksAndMessages(null);
+        }
     }
 
     // --- ActivityAware
@@ -231,6 +265,18 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                 final WindowManager.LayoutParams layoutParams = activity.getWindow().getAttributes();
                 layoutParams.screenBrightness = (float)brightness;
                 activity.getWindow().setAttributes(layoutParams);
+                result.success(null);
+            } else {
+                result.error("FAILED", "Activity is null.", null);
+            }
+        } else if ("setSecureScreen".equals(call.method)) {
+            final boolean secure = call.argument("secure");
+            if (activity != null) {
+                if (secure) {
+                    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                } else {
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                }
                 result.success(null);
             } else {
                 result.error("FAILED", "Activity is null.", null);

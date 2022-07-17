@@ -51,6 +51,11 @@ class MockDeviceKitPlatform
   Future<void> setBrightness(double brightness) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> setSecureScreen(bool secure) {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

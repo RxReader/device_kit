@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_kit/device_kit.dart';
@@ -18,6 +19,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late final StreamSubscription<double> _resp;
+
+  @override
+  void initState() {
+    super.initState();
+    _resp = Device.instance.brightnessChangedStream().listen((double event) {
+      if (kDebugMode) {
+        print('Brightness Changed: $event');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _resp.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

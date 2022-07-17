@@ -4,32 +4,18 @@
 #include <ifaddrs.h>
 
 @implementation DeviceKitPlugin {
-    FlutterMethodChannel *_channel;
+    FlutterEventSink _brightnessChangedEventSink;
 }
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
         methodChannelWithName:@"v7lin.github.io/device_kit"
               binaryMessenger:[registrar messenger]];
-    DeviceKitPlugin *instance = [[DeviceKitPlugin alloc] initWithChannel:channel];
+    DeviceKitPlugin *instance = [[DeviceKitPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
-}
 
-- (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
-    self = [super init];
-    if (self) {
-        _channel = channel;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessDidChange) name:UIScreenBrightnessDidChangeNotification object:nil];
-    }
-    return self;
-}
-
-- (void)brightnessDidChange {
-    if (_channel != nil) {
-        [_channel invokeMethod:@"onBrightnessChanged"
-                     arguments:@{
-                         @"brightness" : [NSNumber numberWithFloat:[UIScreen mainScreen].brightness],
-                     }];
-    }
+    FlutterEventChannel *brightnessChangedEventChannel = [FlutterEventChannel eventChannelWithName:@"v7lin.github.io/device_kit#brightness_changed_event" binaryMessenger:[registrar messenger]];
+    DeviceKitBrightnessObserver *brightnessObserver = [[DeviceKitBrightnessObserver alloc] init];
+    [brightnessChangedEventChannel setStreamHandler:brightnessObserver];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -122,6 +108,36 @@
         freeifaddrs(interfaces);
     }
     return flag;
+}
+
+@end
+
+@implementation DeviceKitBrightnessObserver{
+    FlutterEventSink _eventSink;
+}
+
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+    if (_eventSink != nil) {
+        return nil;
+    }
+    _eventSink = eventSink;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessDidChange) name:UIScreenBrightnessDidChangeNotification object:nil];
+    return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+    if (_eventSink == nil) {
+        return nil;
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _eventSink = nil;
+    return nil;
+}
+
+- (void)brightnessDidChange {
+    if (_eventSink != nil) {
+        _eventSink([NSNumber numberWithFloat:[UIScreen mainScreen].brightness]);
+    }
 }
 
 @end

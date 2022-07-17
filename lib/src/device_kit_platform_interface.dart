@@ -59,4 +59,9 @@ abstract class DeviceKitPlatform extends PlatformInterface {
     throw UnimplementedError(
         'setBrightness(brightness) has not been implemented.');
   }
+
+  Future<void> setSecureScreen(bool secure) {
+    throw UnimplementedError(
+        'setSecureScreen(secure) has not been implemented.');
+  }
 }

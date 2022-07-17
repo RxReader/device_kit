@@ -1,8 +1,8 @@
 PODS:
-  - device_kit (1.0.4):
-    - device_kit/vendor (= 1.0.4)
+  - device_kit (1.0.5):
+    - device_kit/vendor (= 1.0.5)
     - Flutter
-  - device_kit/vendor (1.0.4):
+  - device_kit/vendor (1.0.5):
     - Flutter
   - Flutter (1.0.0)
 
@@ -17,7 +17,7 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  device_kit: 2f255e8b1ccbfe087e0b7bb186a28f81b327670e
+  device_kit: 065287e4415a5e57ec4e0031d39a3ee8e2faf441
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
 
 PODFILE CHECKSUM: 8e679eca47255a8ca8067c4c67aab20e64cb974d
