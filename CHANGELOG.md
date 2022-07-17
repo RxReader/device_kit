@@ -1,3 +1,7 @@
+## 1.0.4
+
+* brightness change event
+
 ## 1.0.3
 
 * fix
