@@ -3,7 +3,7 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #include <ifaddrs.h>
 
-@implementation DeviceKitPlugin{
+@implementation DeviceKitPlugin {
     FlutterMethodChannel *_channel;
 }
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -25,9 +25,10 @@
 
 - (void)brightnessDidChange {
     if (_channel != nil) {
-        [_channel invokeMethod:@"onBrightnessChanged" arguments:@{
-            @"brightness": [NSNumber numberWithFloat:[UIScreen mainScreen].brightness],
-        }];
+        [_channel invokeMethod:@"onBrightnessChanged"
+                     arguments:@{
+                         @"brightness" : [NSNumber numberWithFloat:[UIScreen mainScreen].brightness],
+                     }];
     }
 }
 
