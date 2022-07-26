@@ -3,9 +3,7 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #include <ifaddrs.h>
 
-@implementation DeviceKitPlugin {
-    FlutterEventSink _brightnessChangedEventSink;
-}
+@implementation DeviceKitPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
         methodChannelWithName:@"v7lin.github.io/device_kit"
