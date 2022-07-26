@@ -66,22 +66,24 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
           children: <Widget>[
-            ListTile(
-              title: Text('getDeviceId'),
-              onTap: () async {
-                if (kDebugMode) {
-                  print('Device Id: ${await Device.instance.getDeviceId()}');
-                }
-              },
-            ),
-            ListTile(
-              title: Text('getMac'),
-              onTap: () async {
-                if (kDebugMode) {
-                  print('Mac: ${await Device.instance.getMac()}');
-                }
-              },
-            ),
+            if (Platform.isAndroid)
+              ListTile(
+                title: Text('getDeviceId'),
+                onTap: () async {
+                  if (kDebugMode) {
+                    print('Device Id: ${await Device.instance.getDeviceId()}');
+                  }
+                },
+              ),
+            if (Platform.isAndroid)
+              ListTile(
+                title: Text('getMac'),
+                onTap: () async {
+                  if (kDebugMode) {
+                    print('Mac: ${await Device.instance.getMac()}');
+                  }
+                },
+              ),
             ListTile(
               title: Text('isCharging'),
               onTap: () async {
