@@ -305,7 +305,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
     private String getMacBySystemInterface() {
         try {
             if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
-                WifiManager wifi = (WifiManager) applicationContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifi = (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
                 if (wifi != null) {
                     WifiInfo info = wifi.getConnectionInfo();
                     return info != null ? info.getMacAddress() : null;
