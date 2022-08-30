@@ -106,6 +106,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                             events.success(brightness);
                         }
                     } catch (Settings.SettingNotFoundException e) {
+                        // ignore
                     }
                 }
             };
@@ -190,7 +191,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                         try {
                             final BatteryManager bm = (BatteryManager) applicationContext.getSystemService(Context.BATTERY_SERVICE);
                             isCharging = bm != null && bm.isCharging();
-                        } catch (Exception ignore) {
+                        } catch (Throwable tr) {
                             // ignore
                         }
                     } else {
@@ -216,7 +217,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                 final TelephonyManager tm = (TelephonyManager) applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
                 final boolean isSimMounted = tm != null && tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT;
                 result.success(isSimMounted);
-            } catch (Exception ignore) {
+            } catch (Throwable tr) {
                 result.success(false);
             }
         } else if ("isVPNOn".equals(call.method)) {
@@ -233,7 +234,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
                     }
                 }
                 result.success(isVPNOn);
-            } catch (Exception ignore) {
+            } catch (Throwable tr) {
                 result.success(false);
             }
         } else if ("getProxy".equals(call.method)) {
@@ -305,7 +306,7 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
     private String getMacBySystemInterface() {
         try {
             if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
-                WifiManager wifi = (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
+                final WifiManager wifi = (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
                 if (wifi != null) {
                     WifiInfo info = wifi.getConnectionInfo();
                     return info != null ? info.getMacAddress() : null;
