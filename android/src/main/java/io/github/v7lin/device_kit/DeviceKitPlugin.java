@@ -157,7 +157,9 @@ public class DeviceKitPlugin implements FlutterPlugin, ActivityAware, MethodCall
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        if ("getDeviceId".equals(call.method)) {
+        if ("getAndroidId".equals(call.method)) {
+            result.success(Settings.Secure.getString(applicationContext.getContentResolver(), Settings.Secure.ANDROID_ID));
+        } else if ("getDeviceId".equals(call.method)) {
             String deviceId = null;
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                 deviceId = getDeviceId();

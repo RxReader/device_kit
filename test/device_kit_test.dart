@@ -8,6 +8,11 @@ class MockDeviceKitPlatform
     with MockPlatformInterfaceMixin
     implements DeviceKitPlatform {
   @override
+  Future<String?> getAndroidId() {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<String?> getDeviceId() {
     throw UnimplementedError();
   }

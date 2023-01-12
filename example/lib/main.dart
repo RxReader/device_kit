@@ -68,6 +68,15 @@ class _MyAppState extends State<MyApp> {
           children: <Widget>[
             if (Platform.isAndroid)
               ListTile(
+                title: Text('getAndroidId'),
+                onTap: () async {
+                  if (kDebugMode) {
+                    print('Android Id: ${await Device.instance.getAndroidId()}');
+                  }
+                },
+              ),
+            if (Platform.isAndroid)
+              ListTile(
                 title: Text('getDeviceId'),
                 onTap: () async {
                   if (kDebugMode) {

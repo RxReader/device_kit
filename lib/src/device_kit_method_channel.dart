@@ -22,6 +22,12 @@ class MethodChannelDeviceKit extends DeviceKitPlatform {
       const EventChannel('v7lin.github.io/device_kit#captured_changed_event');
 
   @override
+  Future<String?> getAndroidId() {
+    assert(Platform.isAndroid);
+    return methodChannel.invokeMethod<String>('getAndroidId');
+  }
+
+  @override
   Future<String?> getDeviceId() {
     assert(Platform.isAndroid);
     return methodChannel.invokeMethod<String>('getDeviceId');

@@ -22,6 +22,11 @@ abstract class DeviceKitPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  // AndroidId
+  Future<String?> getAndroidId() {
+    throw UnimplementedError('getAndroidId() has not been implemented.');
+  }
+
   Future<String?> getDeviceId() {
     throw UnimplementedError('getDeviceId() has not been implemented.');
   }
