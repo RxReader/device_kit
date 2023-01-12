@@ -71,7 +71,8 @@ class _MyAppState extends State<MyApp> {
                 title: Text('getAndroidId'),
                 onTap: () async {
                   if (kDebugMode) {
-                    print('Android Id: ${await Device.instance.getAndroidId()}');
+                    print(
+                        'Android Id: ${await Device.instance.getAndroidId()}');
                   }
                 },
               ),
